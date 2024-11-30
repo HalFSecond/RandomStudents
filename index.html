@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>随机学生小程序2.0</title>
+  <style>
+    html,
+    body {
+      font-size: 1.5vw;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    p {
+      font-size: 0.9rem;
+      line-height: 1;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      margin: 0.25rem;
+      padding: 1rem;
+      border-radius: 1rem;
+      box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      height: auto;
+    }
+
+    #title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-right: 1rem;
+    }
+
+    #author {
+      font-size: 1.8rem;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: 40% 60%;
+      width: 100%;
+      height: calc(100vh - 6.5rem);
+    }
+
+    #result,
+    #settings {
+      overflow: auto;
+      margin: 0.25rem;
+      box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+
+    input {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 0.5rem;
+      border: 2px solid #007bff;
+      border-radius: 0.5rem;
+      transition: border 0.3s ease;
+      outline: none;
+      font-size: 1rem;
+    }
+
+    input:focus {
+      border-color: #0056b3;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    #resultList {
+      margin-top: 1rem;
+      font-size: 3rem;
+      font-weight: bold;
+    }
+
+    #generate {
+      font-size: 1.2rem;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 0.5rem;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    #generate:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+  <noscript>请启用JavaScript以确保程序正常运行。</noscript>
+  <div class="container" id="logo">
+    <span id="title">随机学生小程序</span>
+    <span id="author">By Mary</span>
+  </div>
+
+  <div class="grid-container">
+    <div id="result" class="container">
+      <p>最后结果: </p>
+      <p id="resultList"></p>
+    </div>
+    <div id="settings" class="container">
+      <p>设置: </p>
+      <label for="start">
+        <span>开始学号: </span>
+        <input type="number" id="start" value="1">
+      </label>
+      <label for="end">
+        <span>结束学号: </span>
+        <input type="number" id="end" value="60">
+      </label>
+      <label for="count">
+        <span>生成数量: </span>
+        <input type="number" id="count" value="1">
+      </label>
+      <label for="exclude">
+        <span>排除学号: </span>
+        <input type="text" id="exclude" value="">
+      </label>
+      <button id="generate">生成</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('generate').addEventListener('click', function () {
+      const start = parseInt(document.getElementById('start').value);
+      const end = parseInt(document.getElementById('end').value);
+      const count = parseInt(document.getElementById('count').value);
+      const exclude = new Set(document.getElementById('exclude').value.split(',').map(Number).filter(n => !isNaN(n)));
+
+      if (isNaN(start) || isNaN(end) || isNaN(count) || start > end || count < 1) {
+        document.getElementById('resultList').innerText = '请输入有效的范围和数量。';
+        return;
+      }
+
+      const availableNumbers = Array.from({ length: end - start + 1 }, (v, i) => i + start).filter(i => !exclude.has(i));
+
+      if (count > availableNumbers.length) {
+        document.getElementById('resultList').innerText = '生成数量超出可用范围，请调整设置。';
+        return;
+      }
+
+      const resultList = [];
+      while (resultList.length < count) {
+        const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+        resultList.push(availableNumbers[randomIndex]);
+        availableNumbers.splice(randomIndex, 1);
+      }
+
+      document.getElementById('resultList').innerText = resultList.join(', ');
+    });
+  </script>
+</body>
+
+</html>
